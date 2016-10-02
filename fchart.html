@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	html, body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	}
+	body {
+		background-color: #eee;
+	}
+	input[type="text"],
+	input[type="number"],
+	select {
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+		height: 30px;
+		margin: 0;
+		padding: 0 5px;
+		border-width: 0;
+		outline-width: 0;
+		background-color: #eee;
+		font-size: 16px;
+		border: 1px solid #bbb;
+	}
+	input:focus,
+	select:focus {
+		border: 1px solid #66aadd;
+	}
+	#canvas {
+		display: block;
+		/*width: 640px;
+		height: 2400px;*/
+		margin: 60px auto;
+		background-color: #fff;
+	}
+	.edit {
+		box-sizing: border-box;
+		width: 640px;
+		min-height: 200px;
+		margin: 50px auto;
+		padding: 20px;
+		border: 1px solid #ddd;
+		background-color: #fff;
+	}
+	.btn-fill {
+		display: block;
+		width: 640px;
+		height: 60px;
+		font-size: 32px;
+		line-height: 60px;
+		text-align: center;
+		color: #fff;
+		text-decoration: none;
+		background-color: #89f;
+		margin: 20px auto;
+	}
+	.config {
+		width: 600px;
+		margin: 0 auto;
+		padding: 20px;
+		background-color: #fff;
+		border: 1px solid #ccc;
+		transition-duration: .5s;
+		overflow: hidden;
+	}
+	.config hr {
+		background-color: #ddd;
+		border-width: 0;
+		height: 2px;
+	}
+	.config-title {
+		padding: 5px 0px 5px;
+		font-size: 20px;
+		white-space: nowrap;
+		/*color: #fff;*/
+	}
+	.config-row {
+		padding: 10px 10px;
+		margin-bottom: 10px;
+		/*border: 1px solid #aaa;*/
+		background-color: #eee;
+	}
+	.config-row p {
+		font-size: 16px;
+		line-height: 20px;
+	}
+	.config-row p big {
+		font-size: 20px;
+		line-height: 24px;
+	}
+	.config-row label {
+		display: block;
+		padding: 3px 0 5px;
+		font-size: 14px;
+		color: #666;
+	}
+	.config-row:after {
+		content: '';
+		display: block;
+		clear: both;
+	}
+	.config-item {
+		display: inline-block;
+		box-sizing: border-box;
+		float: left;
+		padding: 5px 5px;
+	}
+	.config-item.w-d8 {
+		width: 12.45%;
+	}
+	.config-item.w-d4 {
+		width: 25%;
+	}
+	.config-item.w-d2 {
+		width: 50%;
+	}
+
+/*	body .config {
+		height: 0;
+	}
+	body.on .config {
+		height: auto;
+	}*/
+
+	option[disabled] {
+		font-size: 12px;
+		background-color: #66aadd;
+		color: #fff;
+	}
+	option:hover {
+		background-color: #fff;
+	}
+	option.hint {
+		
+	}
+	</style>
+</head>
+<body class="on">
+	<div contenteditable="true" class="edit" id="edit">
+		1. 听到闹钟<br>
+		2. 睁开眼睛<br>
+		3. 起床？;是-4;否-3.1 <br>
+		4. 起床<br>
+		3.1 按掉闹钟-1<br>
+	</div>
+	<bin-div></bin-div>
+	<div class="config">
+		<div class="config-title">文字设置（ 请选择你的电脑已安装的字体；缺省字体为 sans-serif ）</div>
+		<div class="config-row">
+			<div class="config-item w-d4">
+				<label>字体</label>
+				<select fc-bind="config.fontFamily">
+					<option value="#" disabled="disabled">Windows 字体</option>
+					<option value="SimSun">宋体(SimSun)</option>
+					<option value="NSimSun">新宋体(NSimSun)</option>
+					<option value="FangSong">仿宋(FangSong)</option>
+					<option value="KaiTi">楷体(KaiTi)</option>
+					<option value="FangSongGB2312">仿宋GB2312(FangSongGB2312)</option>
+					<option value="KaiTiGB2312">楷体GB2312(KaiTiGB2312)</option>
+					<option value="Microsoft YaHei">微软雅黑(Microsoft YaHei)</option>
+					<option value="Microsoft JhengHei">微软正黑(Microsoft JhengHei)</option>
+					
+					<!-- mac -->
+					<option value="#" disabled="disabled">Mac 字体</option>
+					<option value="Hiragino Sans GB">冬青黑体(Hiragino Sans GB)</option>
+					<option value="STSong">华文宋体(STSong)</option>
+					<option value="STHeiti Light">华文细黑(STHeiti Light)</option>
+					<option value="STHeiti Light">华文黑体(STHeiti)</option>
+					<option value="STFangsong">华文仿宋(STFangsong)</option>
+					<option value="STKaiti">华文楷体(STKaiti)</option>
+					<!-- end mac -->
+					<!-- office -->
+					<option value="#" disabled="">Office 字体</option>
+					<option value="LiSu">隶书(LiSu)</option>
+					<option value="YouYuan">幼圆(YouYuan)</option>
+					<option value="STXihei">华文细黑(STXihei)</option>
+					<option value="FZShuTi">方正舒体(FZShuTi)</option>
+					<option value="FZYaoti">方正姚体(FZYaoti)</option>
+					<option value="STXingkai">华文行楷(STXingkai)</option>
+					<option value="FZYaoti">方正姚体(FZYaoti)</option>
+					<option value="STCaiyun">华文彩云(STCaiyun)</option>
+					<option value="STHupo">华文琥珀(STHupo)</option>
+					<option value="STLiti">华文隶书(STLiti)</option>
+					<option value="STXingkai">华文行楷(STXingkai)</option>
+					<option value="STXinwei">华文新魏(STXinwei)</option>
+					<!-- end office -->
+
+					<option value="#" disabled="">其它字体</option>
+					<option value="Helvetica">Helvetica</option>
+					<option value="Arial">Arial</option>
+					<option value="Droid Sans">Droid Sans</option>
+
+					<option value="WenQuanYi ZenHei">文泉驿正黑体(WenQuanYi ZenHei)</option>
+					<option value="WenQuanYi Microhei">文泉驿微米黑(WenQuanYi Microhei)</option>
+					<option value="Source Han Sans">思源黑体(Source Han Sans)</option>
+				</select>
+			</div>
+			<div class="config-item w-d4">
+				<label>字号</label>
+				<select fc-bind="config.fontSize">
+					<option value="12">12</option>
+					<option value="13">13</option>
+					<option value="14">14</option>
+					<option value="15">15</option>
+					<option value="16">16</option>
+					<option value="17">17</option>
+					<option value="18">18</option>
+					<option value="19">19</option>
+					<option value="20">20</option>
+					<option value="21">21</option>
+					<option value="22">22</option>
+					<option value="23">23</option>
+					<option value="24">24</option>
+					<option value="25">25</option>
+				</select>
+			</div>
+			<div class="config-item w-d4">
+				<label>开始文字</label>
+				<input type="text" value="开始" fc-bind="config.startText">
+			</div>
+			<div class="config-item w-d4">
+				<label>结束文字</label>
+				<input type="text" value="结束" fc-bind="config.endText">
+			</div>	
+		</div>
+		<div class="config-title">
+			图形和画布
+		</div>
+		
+		<div class="config-row">
+			<div class="config-item w-d4">
+				<label>节点图形宽</label>
+				<input type="number" value="120" id="t_num" fc-bind="config.minWidth">
+			</div>
+			<div class="config-item w-d4">
+				<label>节点图形高</label>
+				<input type="number" value="40" fc-bind="config.minHeight">
+			</div>
+			<div class="config-item w-d4">
+				<label>图形行间距</label>
+				<input type="number" min="0" value="40" fc-bind="config.rowSpacing">
+			</div>
+			<div class="config-item w-d4">
+				<label>图形列间距</label>
+				<input type="number" min="0" value="40" fc-bind="config.colSpacing">
+			</div>	
+			<br>
+			<div class="config-item w-d4">
+				<label>画布上边距</label>
+				<input type="number" min="0" max="200" value="15" fc-bind="config.top">
+			</div>
+			<div class="config-item w-d4">
+				<label>画布下边距</label>
+				<input type="number" min="0" max="200" value="20" fc-bind="config.bottom">
+			</div>
+			<div class="config-item w-d4">
+				<label>画布左边距</label>
+				<input type="number" min="0" max="200" value="10" fc-bind="config.left">
+			</div>
+			<div class="config-item w-d4">
+				<label>画布右边距</label>
+				<input type="number" min="0" max="200" value="10" fc-bind="config.right">
+			</div>			
+		</div>
+
+		<div class="config-title">
+			其它
+		</div>
+		<div class="config-row">
+			<div class="config-item w-d4">
+				<label>填充色</label>
+				<input type="color" value="#ffffff" fc-bind="config.fill">
+			</div>
+			<div class="config-item w-d4">
+				<label>线条色</label>
+				<input type="color" value="#000000" fc-bind="config.color">
+			</div>
+		</div>
+
+		<div class="config-title">
+			关于
+		</div>
+		<div class="config-row">
+			<p></p>
+			<p><big>介绍<br></big>
+			一般不是每个人都会经常用到流程图，但是有时候你还就得画个流程图，对于这种轻度使用的情况到处找工具多麻烦，顺手写下文字就好了<br>
+			会写这个东西出来是因为写文档的时候想到的把带序号的文字描述变成流程图，然后就有了这个，详细故事点击<a target="_blank" href="http://bin16.farbox.com/post/magic/2016-10-02-draw-flow-chart">这里</a>；源代码请到<a target="_blank" href="https://github.com/bin16/txt2fchart">这里</a></p>
+			<p><big>使用方法<br></big>
+			原理是序号的整数部分对应行，小数部分对应列；每行一个节点，1.0，2.0 这样开始，后跟空格，然后是文字内容。0 可以省略；如果要指定下一个节点的序号用“-序号”写在后面，不指定则默认为下一行的主节点；有多分支跳转请用英文分号（;）分隔，；每个部分都为条件-序号格式；复杂的定位可可以靠改序号实现；下载直接右键另存就好了；</p>
+			<p style="font-weight: bold;"><big>注意：<br></big>从正下方到正上方的跳转会有问题；<br>请选用最新的最新的浏览器；<br>
+			字体要你的电脑安装过才可用，没有的话会使用你浏览器的 sans-serif 字体；<br>
+			不承担因为实用本工具带来的文档不通过无法毕业等各种不良后果；<br>
+			<br>
+			</p>
+		</div>
+
+	</div>
+	<a href="javascript:;" class="btn-fill" id="draw">绘制！</a>
+	<canvas id="canvas" width="640" height="320"></canvas>
+</body>
+<script>
+const els = document.querySelectorAll.bind( document );
+var bs = Array.prototype.slice.call( els('[fc-bind]') );
+var fc = {};
+var fcBind = function(obj, prop, el) {
+	Object.defineProperty(obj, prop.toString(), {
+		get : function() {
+			var val = el.value;
+			if( /^#/.test(val) ) {
+				return val;
+			} else if ( /^\d*$/.test(val) ) {
+				return parseInt(val);
+			} else {
+				return val;
+			}
+		},
+		set : function(val) {
+			el.value = val;
+		}
+	});
+}
+bs.map(function(one, id){
+	var toDo = one.getAttribute('fc-bind') ;
+	var items = toDo.split('.');
+	t = fc;
+	items.map((item, id) => {
+		t[item] = t[item] || {};
+		t = t[item];
+		if( id == items.length - 2 ) {
+			fcBind( t, items[id+1].toString(), one );
+		}
+	});
+	
+});
+fc.config.fontSize = 16;
+fc.config.fontFamily = 'SimSun';
+
+// var $ = document.querySelector;
+document.querySelector('#draw').onclick=drawChart;
+function drawChart() {
+	var config = fc.config || {
+		top : 15,
+		left : 10,
+		bottom : 20,
+		right : 10,
+		minWidth : 200,
+		minHeight : 50,
+		rowSpacing : 40,
+		colSpacing : 40,
+		font : '14px 微软雅黑',
+		rows : 0,
+		cols : 0,
+		fill : '#fff',
+		color : '#000',
+		startText : '开始',
+		endText : '结束'
+	};
+	window.cfg = config;
+	config.font = config.font || config.fontSize+'px "' +config.fontFamily+'", sans-serif';
+	config.rows = 0;
+	config.cols = 0;
+	console.dir(config);
+
+
+
+	var canvas = document.querySelector('#canvas'),
+		ctx = canvas.getContext('2d'),
+		txt = document.querySelector('#edit').innerText,
+		draw = [],
+		end = 0;
+	var init = function() {
+		var str = txt;
+		str.split('\n').map((one, id) => {
+			var rg = /^(\d+)\.(\d+)?\s([^;]+)(;[\S\s]+)?$/;
+			if( !rg.test(one) ) return;
+			var tmp = one.match( rg ),
+				row = parseInt( tmp[1] ),
+				col = tmp[2] ? parseInt( tmp[2] ) : 0,
+				action = tmp[3].split('-')[0],
+				next = tmp[3].split('-')[1] || row+1,
+				tmpMore = tmp[4],
+				branch = [];
+
+			config.rows = row > config.rows ? row : config.rows;
+			config.cols = col > config.cols ? col : config.cols;
+
+			tmpMore && tmpMore.split(';').map((one, id)=>{
+				var condition = one.split('-');
+				one.length>0 && branch.push({
+					when : condition[0],
+					result : condition[1] || row+1
+				});
+			});
+			draw.push({
+				row : row,
+				col : col,
+				action : action,
+				next : next,
+				branch : branch
+			});
+		});
+		config.cols += 1;
+		config.rows += 2;
+		config.width = config.cols * ( config.minWidth + config.colSpacing ) - config.colSpacing + config.left + config.right; 
+		config.height = config.rows * ( config.minHeight + config.rowSpacing ) - config.rowSpacing +config.top + config.bottom;
+		canvas.width = config.width;
+		canvas.height = config.height;
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.textBaseline = 'middle';
+		ctx.textAlign = 'center';
+		ctx.font = config.fontSize + 'px ' + config.fontFamily;
+		ctx.fillStyle = config.fill;
+		// ctx.lineStyle = config.color;
+		ctx.strokeStyle = config.color
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = config.color;
+	}
+	var id = function() {
+		var args = Array.prototype.slice.call(arguments);
+		args = args.join('.').split('.');
+		return [ +args[0], args[1] || 0 ];
+	}
+	var pos = function() {
+		var args = Array.prototype.slice.call(arguments),
+			pos = [],
+			mw = config.minWidth,
+			mh = config.minHeight,
+			rs = config.rowSpacing,
+			cs = config.colSpacing,
+			pt = config.top,
+			pl = config.left,
+			pr = config.right,
+			pb = config.bottom,
+			args = args.join('.').split('.');
+			r = +args[0],
+			c = +args[1] || +0,
+			x = pl + c * ( mw + cs ),
+			y = pt + r * ( mh + rs ),
+			pos = [ r, c ];
+		return {
+			x : x,
+			y : y,
+			row : r,
+			col : c,
+			id : pos,
+			cen : [
+				x + mw / 2,
+				y + mh / 2
+			],
+			top : [ 
+				x + mw / 2,
+				y
+			],
+			bottom : [
+				x + mw / 2,
+				y + mh
+			],
+			left : [
+				x,
+				y + mh / 2
+			],
+			right : [
+				x + mw,
+				y + mh / 2
+			],
+			up : [
+				x + mw / 2,
+				y - rs / 2
+			],
+			down : [
+				x + mw / 2,
+				y + rs / 2
+			]
+		}
+	}
+	var arrow = function( peak, direction, width=6, length=10) {
+		var d = direction,
+			x = peak[0],
+			y = peak[1],
+			w = width/2,
+			l = length,
+			p0 = peak;
+			if( d === 0 ) {
+				p1 = [x-w, y+l];
+				p2 = [x+w, y+l];
+			} else if( d === 1 ) {
+				p1 = [x-l, y-w];
+				p2 = [x-l, y+w];
+			} else if( d === 2 ) {
+				p1 = [x-w, y-l];
+				p2 = [x+w, y-l];
+			} else if( d === 3 ) {
+				p1 = [x+l, y-w];
+				p2 = [x+l, y+w];
+			} 
+		ctx.beginPath();
+		ctx.moveTo( ...p0 );
+		ctx.lineTo( ...p1 );
+		ctx.lineTo( ...p2 );
+		ctx.closePath();
+		ctx.fill();
+	}
+	var line = function( p0, p1 ) {
+		ctx.beginPath();
+		if( p0.x < p1.x && p0.y == p1.y) { /* 左到右 */
+			arrow( p1.left, 1);
+			ctx.moveTo( ...p0.right );
+			ctx.lineTo( ...p1.left );		
+		} else if( p0.x > p1.x && p0.y == p1.y) { /* 左到右 */
+			arrow( p1.right, 3);
+			ctx.moveTo( ...p0.left );
+			ctx.lineTo( ...p1.right );		
+		} else if( p0.x == p1.x && p0.y < p1.y ) { /* 从上到下 */
+			arrow( p1.top, 2);
+			ctx.moveTo( ...p0.bottom );
+			ctx.lineTo( ...p1.top );
+		} else if ( p0.x == p1.x && p0.y > p1.y ) { /* 从下到上 */
+			var pt1 = pos(p0.row,p0.col+1),
+				pt2 = pos(p1.row,p0.col+1)
+			arrow( p1.bottom, 0);
+			ctx.moveTo( ...p0.right );
+			ctx.lineTo( ...pt1.cen );
+			ctx.lineTo( ...pt2.cen );
+			ctx.lineTo( ...p1.right );
+		} else if ( p0.x > p1.x && p0.y > p1.y ) { /* 从右下到左上 */
+			var pt = pos( p1.row, p0.col );
+			arrow( p1.right, 3);
+			ctx.moveTo( ...p0.top );
+			ctx.lineTo( ...pt.cen );
+			ctx.lineTo( ...p1.right );
+		} else if ( p0.x < p1.x && p0.y < p1.y ) { /* 左上 - 右下 */
+			var pt = pos( p0.row, p1.col );
+			arrow( p1.top, 2);
+			ctx.moveTo( ...p0.right );
+			ctx.lineTo( ...pt.cen  );
+			ctx.lineTo( ...p1.top );
+		} else if ( p0.x > p1.x && p0.y < p1.y ) { /* 右上 - 左下 */
+			var pt1 = [ p0.cen[0], p0.bottom[1]+config.rowSpacing/2 ],
+				pt2 = [ p1.cen[0], p0.bottom[1]+config.rowSpacing/2 ];
+			arrow( pt2, 3);
+			ctx.moveTo( ...p0.bottom );
+			ctx.lineTo( ...pt1 );
+			ctx.lineTo( ...pt2 );
+			ctx.lineTo( ...p1.top );
+		}
+		ctx.stroke();
+	}
+	var rect = function( p0 ) {
+		ctx.strokeRect(p0.x, p0.y, config.minWidth, config.minHeight);
+	}
+	var diamond = function( p0 ) {
+		ctx.beginPath();
+		ctx.moveTo( ...p0.top );
+		ctx.lineTo( ...p0.right );
+		ctx.lineTo( ...p0.bottom );
+		ctx.lineTo( ...p0.left );
+		ctx.closePath();
+		ctx.stroke();
+	}
+	var hexagon = function( p0 ) {
+		ctx.beginPath();
+		ctx.moveTo( ...p0.left );
+		ctx.lineTo( p0.x + config.minWidth*0.3, p0.y );
+		ctx.lineTo( p0.x + config.minWidth*0.7, p0.y );
+		ctx.lineTo( ...p0.right );
+		ctx.lineTo( p0.x + config.minWidth*0.7, p0.y+config.minHeight );
+		ctx.lineTo( p0.x + config.minWidth*0.3, p0.y+config.minHeight );
+		ctx.closePath();
+		ctx.stroke();
+		ctx.fillText( config.startText, ...p0.cen );
+	}
+	var circle = function( p0 ) {
+		ctx.beginPath();
+		ctx.arc(...p0.cen, config.minHeight/2, 0, Math.PI*2, false);
+		ctx.stroke();
+		ctx.fillText( config.endText, ...p0.cen, config.minHeight/2 );
+	}
+
+
+	init();
+
+	draw.map((one, id)=>{
+		var r = one.row,
+			c = one.col,
+			t = one.action
+			n = one.next,
+			mw = config.minWidth,
+			mh = config.minHeight,
+			rs = config.rowSpacing,
+			cs = config.colSpacing,
+			x = config.left + c*(cs+mw), /* col starts from 0*/
+			y = config.top + (r-1)*(rs+mh), /* row starts from 1 */
+			ps = pos( r, c );
+		end = r > end ? r : end;
+		ctx.fillText(t, ...ps.cen, config.minWidth);
+		if( one.branch.length > 0 ) {
+			diamond( pos(r,c) );
+			one.branch.map(function(one, id) {
+				var p0 = pos( r, c ),
+					p1 = pos( one.result );
+				line( p0, p1 );
+				ctx.textAlign = 'right';
+				ctx.fillText( one.when+' ', ...p1.up, mw*0.8 );
+				ctx.textAlign = 'center';
+			});
+		} else {
+			rect( pos(r,c) );
+			var p0 = pos( r, c ),
+				p1 = pos( n );
+				line( p0, p1 );
+		}
+	});
+	hexagon( pos(0) );
+	line( pos(0), pos(1) );
+	arrow( pos(1).top, 2 );
+	circle( pos(end+1) );
+}	
+
+</script>
+</html>
